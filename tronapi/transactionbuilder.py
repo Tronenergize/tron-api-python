@@ -937,7 +937,7 @@ class TransactionBuilder(object):
                 user_fee_percentage > 100:
             raise ValueError('Invalid user_fee_percentage provided')
 
-        return self.tron.manager.request('wallet/updatesetting', {
+        return self.tron.manager.request('/wallet/updatesetting', {
             'owner_address': self.tron.address.to_hex(owner_address),
             'contract_address': self.tron.address.to_hex(contract_address),
             'consume_user_resource_percent': user_fee_percentage
@@ -971,7 +971,7 @@ class TransactionBuilder(object):
                 origin_energy_limit > 10000000:
             raise ValueError('Invalid originEnergyLimit  provided')
 
-        return self.tron.manager.request('wallet/updateenergylimit', {
+        return self.tron.manager.request('/wallet/updateenergylimit', {
             'owner_address': self.tron.address.to_hex(owner_address),
             'contract_address': self.tron.address.to_hex(contract_address),
             'origin_energy_limit': origin_energy_limit
@@ -979,19 +979,19 @@ class TransactionBuilder(object):
 
     def check_permissions(self, permissions, _type):
         if permissions is not None:
-            if permissions['type'] != _type or \
+          if permissions['type'] != _type or \
                     not permissions['permission_name'] or \
                     not is_string(permissions['permission_name']) or \
                     not is_integer(permissions['threshold']) or \
                     permissions['threshold'] < 1 or not permissions['keys']:
                 return False
 
-        for key in permissions['key']:
-            if not self.tron.isAddress(key['address']) or \
-                    not is_integer(key['weight']) or \
-                    key['weight'] > permissions['threshold'] or \
-                    key['weight'] < 1 or _type == 2 and not permissions['operations']:
-                return False
+          for key in permissions['keys']:
+              if not self.tron.isAddress(key['address']) or \
+                      not is_integer(key['weight']) or \
+                      key['weight'] > permissions['threshold'] or \
+                      key['weight'] < 1 or _type == 2 and not permissions['operations']:
+                  return False
 
         return True
 
@@ -1038,4 +1038,4 @@ class TransactionBuilder(object):
             else:
                 data['actives'] = actives_permissions
 
-        return self.tron.manager.request('wallet/accountpermissionupdate', data)
+        return self.tron.manager.request('/wallet/accountpermissionupdate', data)
